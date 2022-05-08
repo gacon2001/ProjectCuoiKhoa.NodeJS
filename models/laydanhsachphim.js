@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   LayDanhSachPhim.init({
-    maPhim: DataTypes.SMALLINT,
+    maPhim: DataTypes.INTEGER,
     tenPhim: DataTypes.STRING,
     biDanh: DataTypes.STRING,
     trailer: DataTypes.STRING,

@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       maPhim: {
-        type: Sequelize.SMALLINT
+        type: Sequelize.INTEGER
       },
       tenPhim: {
         type: Sequelize.STRING

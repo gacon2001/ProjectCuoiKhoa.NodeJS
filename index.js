@@ -5,7 +5,7 @@ const {sequelize} = require("./models");//models index export db dòng cuối =>
 const rootRouter = require('./src/routers'); 
 
 const app = express();
-// app.use(express.json());
+app.use(express.json());//destructuring -> undefined -> phải dùng express.json
 
 app.use('/api', rootRouter);//tất cả api đều đi qua đường dẫn này mới vào rootRouter => p2: router của mìh (import vô)
 
