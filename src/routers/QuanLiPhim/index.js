@@ -1,5 +1,6 @@
 'use strict';
 const express = require('express');
+const { authenticate, checkMaLoaiNguoiDung } = require('../../middleware/Auth');
 const { getAllDanhSachBanner, getAllDanhSachPhim, getInforPhimByMaPhim, checkExistedPhimByMaPhim, deletePhim } = require('../../services/QuanLiPhim');
 
 const quanLiPhimRouter = express.Router();
@@ -23,7 +24,7 @@ quanLiPhimRouter.get("/LayDanhSachPhim", async (req, res)=>{
 quanLiPhimRouter.put("/UploadImagePhim", async (req, res)=>{
 } )
 
-quanLiPhimRouter.delete("/XoaPhim/:maPhim", async (req, res)=>{
+quanLiPhimRouter.delete("/XoaPhim/:maPhim", [authenticate, checkMaLoaiNguoiDung("QuanTri")],async (req, res)=>{
     const {maPhim} = req.params;
 
     const isExistMovieByMaPhim = await checkExistedPhimByMaPhim(maPhim);

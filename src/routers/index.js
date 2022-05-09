@@ -7,6 +7,7 @@ const quanLiNguoiDung = require("./QuanLiNguoiDung");
 
 const rootRouter = express.Router();//method trả về router (phụ) cho mình 
 
+//!nếu muốn gắn middleware cho toàn QuanLiDatVe thì gắn vô giữa
 rootRouter.use("/QuanLiDatVe", quanLiDatVeRouter);//gắn quanLiDatVeRouter là con của rootRouter
 rootRouter.use("/QuanLiRap", quanLiRapRouter);
 rootRouter.use("/QuanLiPhim", quanLiPhimRouter);

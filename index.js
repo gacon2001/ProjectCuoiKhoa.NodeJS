@@ -1,13 +1,17 @@
 'use strict';
 const express = require('express');
 const {sequelize} = require("./models");//models index export db dòng cuối => sequelize này chính là connect của mình tới database
+const { logger } = require('./src/middleware/logger');
 
 const rootRouter = require('./src/routers'); 
 
 const app = express();
 app.use(express.json());//destructuring -> undefined -> phải dùng express.json
 
-app.use('/api', rootRouter);//tất cả api đều đi qua đường dẫn này mới vào rootRouter => p2: router của mìh (import vô)
+///log tất cả những request gửi rới server của mình
+app.use(logger);
+
+app.use('/api',rootRouter);//tất cả api đều đi qua đường dẫn này mới vào rootRouter => p2: router của mìh (import vô)
 
 //check test connection
 sequelize

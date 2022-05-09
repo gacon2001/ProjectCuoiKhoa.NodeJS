@@ -1,6 +1,7 @@
 "use strict";
 const express = require("express");
-const { scriptMatKhau } = require("../../services/Auth");
+const { authenticate, checkMaLoaiNguoiDung } = require("../../middleware/Auth");
+const { scriptMatKhau, comparePassword, genToken } = require("../../services/Auth");
 const {
   getAllDSLoaiNguoiDung,
   getAllDSNguoiDung,
@@ -22,17 +23,21 @@ quanLiNguoiDung.get("/LayDanhSachLoaiNguoiDung", async (req, res) => {
 });
 
 quanLiNguoiDung.post("/DangNhap", async (req, res) => {
-  // const {taiKhoan, matKhau} = req.body;
-  // const user = await getUserByTaiKhoan(taiKhoan);
-  // if(!user){
-  //     return res.status(400).send(`taiKhoan: ${taiKhoan} is not exist`);
-  // }
-  // const isSuccess =
-  // return res.status.send(`success`)
+  const {taiKhoan, matKhau} = req.body;
+  const user = await getUserByTaiKhoan(taiKhoan);
+  if(!user){
+      return res.status(400).send(`taiKhoan: ${taiKhoan} is not exist`);
+  }
+  const isSuccess = comparePassword(matKhau, user.matKhau);
+  if(!isSuccess){
+    return res.status(400).send(`matKhau is not match`)
+  }
+  const token = genToken({taiKhoan: user.taiKhoan});
+  return res.status.send({user, token})
 });
 
 quanLiNguoiDung.post("/DangKi", async (req, res) => {
-  const { taiKhoan, matKhau, email, soDt, hoTen } = req.body;
+  const { taiKhoan, matKhau, email, soDt, hoTen } = req.body;//ko lấy maLoaiNguoiDung từ body
 
   //validate
 
@@ -41,11 +46,12 @@ quanLiNguoiDung.post("/DangKi", async (req, res) => {
 
   const data = await createUser({
     taiKhoan,
-    matKhau: matKhauHashed,//! password ko thể dịch ngược lại đc
+    //matKhau: matKhauHashed,//! password ko thể dịch ngược lại đc
+    matKhau,
     email,
     soDt,
     hoTen,
-    // maLoaiNguoiDung: "KhachHang",
+    maLoaiNguoiDung: "KhachHang",//chỉ khách hàng mới đk
   });
   if(!data){
     return res.status(500).send(`can not create user`)
@@ -77,14 +83,17 @@ quanLiNguoiDung.post("/LayThongTinNguoiDung/:taiKhoan", async (req, res) => {
 });
 
 quanLiNguoiDung.post("/ThemNguoiDung", async (req, res) => {
-  const { taiKhoan, matKhau, email, soDt, maLoaiNguoiDung, hoTen } = req.body;
+  const { taiKhoan, matKhau, email, soDt, hoTen } = req.body;
+
+  // const matKhauHashed = scriptMatKhau(matKhau);
 
   const user = await createUser({
     taiKhoan,
+    // matKhau:matKhauHashed,
     matKhau,
     email,
     soDt,
-    maLoaiNguoiDung,
+    maLoaiNguoiDung:"QuanTri",
     hoTen,
   });
   if (!user) {
@@ -115,7 +124,7 @@ quanLiNguoiDung.put("/CapNhatThongTinNguoiDung/:taiKhoan", async (req, res) => {
   res.status(200).send(`updated`);
 });
 
-quanLiNguoiDung.delete("/XoaNguoiDung/:taiKhoan", async (req, res) => {
+quanLiNguoiDung.delete("/XoaNguoiDung/:taiKhoan",[authenticate, checkMaLoaiNguoiDung("QuanTri")], async (req, res) => {
   const { taiKhoan } = req.params;
 
   const isExistedUser = await checkExistUserByTaiKhoan(taiKhoan);
