@@ -13,8 +13,11 @@ module.exports = (sequelize, DataTypes) => {
       // return attributes;
       //! => cách remove 1 field(key) ra nhưng khi cần vẫn đọc được, cách để ko trả về cái field password cho FE , nhưng field này khi cần mình vẫn đọc đc
     // }
-    static associate(models) {
-      // define association here
+    static associate({Avatar}) {
+    //1user có nhìu avatar
+      this.hasMany(Avatar, {
+        foreignKey: "userId",//của bên Avatar
+      })
     }
   }
   LayDanhSachNguoiDung.init({

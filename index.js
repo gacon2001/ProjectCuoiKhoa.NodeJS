@@ -3,10 +3,15 @@ const express = require('express');
 const {sequelize} = require("./models");//models index export db dòng cuối => sequelize này chính là connect của mình tới database
 const { logger } = require('./src/middleware/logger');
 
+const path = require("path");//copy cùng __dirname -> require mọi thứ trên đầu
+
 const rootRouter = require('./src/routers'); 
 
 const app = express();
 app.use(express.json());//destructuring -> undefined -> phải dùng express.json
+
+//ko muốn log khi get hình lên => copy từ web
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 ///log tất cả những request gửi rới server của mình
 app.use(logger);

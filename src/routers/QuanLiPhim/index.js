@@ -21,7 +21,8 @@ quanLiPhimRouter.get("/LayDanhSachPhim", async (req, res)=>{
     res.status(200).send(layDanhSachPhim)
 } );
 
-quanLiPhimRouter.put("/UploadImagePhim", async (req, res)=>{
+quanLiPhimRouter.put("/UploadImagePhim/:maPhim", async (req, res)=>{
+    
 } )
 
 quanLiPhimRouter.delete("/XoaPhim/:maPhim", [authenticate, checkMaLoaiNguoiDung("QuanTri")],async (req, res)=>{

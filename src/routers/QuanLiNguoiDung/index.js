@@ -1,6 +1,8 @@
 "use strict";
 const express = require("express");
+const { SYSTEM } = require("../../config");
 const { authenticate, checkMaLoaiNguoiDung } = require("../../middleware/Auth");
+const { uploadAvatar } = require("../../middleware/UploadFile");
 const { scriptMatKhau, comparePassword, genToken } = require("../../services/Auth");
 const {
   getAllDSLoaiNguoiDung,
@@ -10,6 +12,7 @@ const {
   getUserByTaiKhoan,
   updateUserByTaiKhoan,
   createUser,
+  storageAvatar,
 } = require("../../services/QuanLiNguoiDung");
 
 const quanLiNguoiDung = express.Router();
@@ -33,7 +36,7 @@ quanLiNguoiDung.post("/DangNhap", async (req, res) => {
     return res.status(400).send(`matKhau is not match`)
   }
   const token = genToken({taiKhoan: user.taiKhoan});
-  return res.status.send({user, token})
+  return res.status(200).send({user, token})
 });
 
 quanLiNguoiDung.post("/DangKi", async (req, res) => {
@@ -141,5 +144,21 @@ quanLiNguoiDung.delete("/XoaNguoiDung/:taiKhoan",[authenticate, checkMaLoaiNguoi
   }
   res.status(200).send(`user taiKhoan: ${taiKhoan} is deleted`);
 });
+
+//check token có hợp hay ko, đã login hay chưa 
+quanLiNguoiDung.post("/UploadAvatar",[authenticate, uploadAvatar()], async(req, res)=>{
+  //upload avatar cho user đó nên lụm user ra
+  const user = req.user;//(user trong auth middleware: req.user = user)
+
+  const file = req.file;
+
+  //url: để load hình lên
+  const urlAvatar = `${SYSTEM.DOMAIN}/${file.path}`;//sau domain là đg dẫn -> domain: folder config -> SYSTEM.DOMAIN
+  const avatar = await storageAvatar (user.taiKhoan, urlAvatar);//có domain r-> lưu lại nó
+
+  res.status(200).send(avatar)
+  //lấy đc file từ request -> cần middleware
+
+})
 
 module.exports = quanLiNguoiDung;

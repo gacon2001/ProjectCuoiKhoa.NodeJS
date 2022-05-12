@@ -1,6 +1,8 @@
 "use strict";
+const { Op } = require("sequelize");
 const { LayDanhSachLoaiNguoiDung } = require("../../../models");
 const { LayDanhSachNguoiDung } = require("../../../models");
+const { Avatar } = require("../../../models");
 
 const getAllDSLoaiNguoiDung = async () => {
   try {
@@ -20,14 +22,14 @@ const getAllDSNguoiDung = async () => {
   }
 };
 
-const createUser =  async(user)=>{
-    try {
-        const newUser = await LayDanhSachNguoiDung.create(user);
-        return newUser;
-    } catch (error) {
-        return null;
-    }
-}
+const createUser = async (user) => {
+  try {
+    const newUser = await LayDanhSachNguoiDung.create(user);
+    return newUser;
+  } catch (error) {
+    return null;
+  }
+};
 
 const getUserByTaiKhoan = async (taiKhoan) => {
   try {
@@ -35,7 +37,12 @@ const getUserByTaiKhoan = async (taiKhoan) => {
       where: {
         taiKhoan,
       },
+      //!signin -> join avatar 
+      include:{
+        model: Avatar,
+      } 
     });
+    // console.log({user});
     return user;
   } catch (error) {
     return null;
@@ -85,6 +92,35 @@ const deleteNguoiDungByTaiKhoan = async (taiKhoan) => {
   }
 };
 
+const storageAvatar = async (userId, url) => {
+  try {
+    const avatar = await Avatar.create({
+      url,
+      userId,
+      isActive: true,
+    });
+
+    await Avatar.update(
+      {
+        isActive: false,
+      },
+      {
+        //điều kiện
+        where: {
+          userId,//userId mà đang tạo avatar mới nhưng loại bỏ avatar vừa đc insert vo
+          id: {
+            [Op.not]: avatar.id,//Op: đk là ko phải avatar id này
+          },
+        },
+      }
+    );
+
+    return avatar;
+  } catch (error) {
+    return null;
+  }
+};
+
 module.exports = {
   getAllDSLoaiNguoiDung,
   getAllDSNguoiDung,
@@ -93,4 +129,5 @@ module.exports = {
   getUserByTaiKhoan,
   updateUserByTaiKhoan,
   createUser,
+  storageAvatar,
 };
