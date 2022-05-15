@@ -3,6 +3,8 @@ const { Op } = require("sequelize");
 const { LayDanhSachLoaiNguoiDung } = require("../../../models");
 const { LayDanhSachNguoiDung } = require("../../../models");
 const { Avatar } = require("../../../models");
+const { LayDanhSachPhim } = require("../../../models");
+const {Ticket} = require("../../../models");
 
 const getAllDSLoaiNguoiDung = async () => {
   try {
@@ -37,10 +39,23 @@ const getUserByTaiKhoan = async (taiKhoan) => {
       where: {
         taiKhoan,
       },
-      //!signin -> join avatar 
-      include:{
-        model: Avatar,
-      } 
+      //!signin -> join avatar
+      //tham chiếu cả avatar và avatars -> truyền vô include là 1 arr object
+      include: [
+        {
+          model: Avatar,
+          //!alias -> gắn lại key vào đây
+          as: "avatar",
+          //!đang có nhiều avatars -> lấy isActive: true thôi
+          where: {
+            isActive: true,
+          },
+        },
+        {
+          model: Avatar,
+          as: "avatars", //ko cần where -> lấy ra hết
+        },
+      ],
     });
     // console.log({user});
     return user;
@@ -107,9 +122,9 @@ const storageAvatar = async (userId, url) => {
       {
         //điều kiện
         where: {
-          userId,//userId mà đang tạo avatar mới nhưng loại bỏ avatar vừa đc insert vo
+          userId, //userId mà đang tạo avatar mới nhưng loại bỏ avatar vừa đc insert vo
           id: {
-            [Op.not]: avatar.id,//Op: đk là ko phải avatar id này
+            [Op.not]: avatar.id, //Op: đk là ko phải avatar id này
           },
         },
       }
@@ -121,6 +136,30 @@ const storageAvatar = async (userId, url) => {
   }
 };
 
+const getPhimWatchedByUser = async (userId) => {
+  try {
+    //lấy user ra = userId
+    const data = await LayDanhSachNguoiDung.findOne({
+      where: {
+        id: userId,
+      },
+      include: [
+        {
+          model: LayDanhSachPhim,
+          as: "moviesWatched",
+          where: {
+            [Op.not]: 1,
+          },
+        },
+      ],
+    });
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+
 module.exports = {
   getAllDSLoaiNguoiDung,
   getAllDSNguoiDung,
@@ -130,4 +169,5 @@ module.exports = {
   updateUserByTaiKhoan,
   createUser,
   storageAvatar,
+  getPhimWatchedByUser,
 };

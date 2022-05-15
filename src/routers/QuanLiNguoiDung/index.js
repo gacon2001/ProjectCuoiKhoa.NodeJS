@@ -13,6 +13,7 @@ const {
   updateUserByTaiKhoan,
   createUser,
   storageAvatar,
+  getPhimWatchedByUser,
 } = require("../../services/QuanLiNguoiDung");
 
 const quanLiNguoiDung = express.Router();
@@ -29,6 +30,7 @@ quanLiNguoiDung.post("/DangNhap", async (req, res) => {
   const {taiKhoan, matKhau} = req.body;
   const user = await getUserByTaiKhoan(taiKhoan);
   if(!user){
+    console.log({user});
       return res.status(400).send(`taiKhoan: ${taiKhoan} is not exist`);
   }
   const isSuccess = comparePassword(matKhau, user.matKhau);
@@ -160,5 +162,19 @@ quanLiNguoiDung.post("/UploadAvatar",[authenticate, uploadAvatar()], async(req, 
   //lấy đc file từ request -> cần middleware
 
 })
+
+quanLiNguoiDung.get("/LayDSPhimUserWatched",[authenticate], async(req, res)=>{
+  const user = req.user;
+
+  //lấy list movie mà user đã xem trong table Ticket
+  //ban đầu dùng getPhimWatchedByUser -> sẽ lâý đc cả movie watched và cả infor user
+  //=> ở đây mình chỉ lấy movie watched 
+  const data = await user.getMoviesWatched(); //!models: LayDanhSachPhim as:"moviesWatched" => tự động có method getMoviesWatched cho mình -> Tự động tạo ra khi models có alias như vậy
+  if(!user){
+    return  res.status(500).send("can not get data")
+  }
+  res.status(200).send(data);
+});
+
 
 module.exports = quanLiNguoiDung;
