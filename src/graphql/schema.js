@@ -6,7 +6,7 @@ type LayDanhSachNguoiDung{
     hoTen: String!
     email: String!
     soDt: Int!
-    matKhau: Int!
+    matKhau: String!
     maLoaiNguoiDung: String!
 }
 

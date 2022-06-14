@@ -28,11 +28,14 @@ quanLiNguoiDung.get("/LayDanhSachLoaiNguoiDung", async (req, res) => {
 
 quanLiNguoiDung.post("/DangNhap", async (req, res) => {
   const {taiKhoan, matKhau} = req.body;
-  const user = await getUserByTaiKhoan(taiKhoan);
+  const response = await getUserByTaiKhoan(taiKhoan);
+  const user = response.dataValues;
+  console.log(user);
   if(!user){
-    console.log({user});
       return res.status(400).send(`taiKhoan: ${taiKhoan} is not exist`);
   }
+  // tui ko rõ sequelize ntn nữa =]] mà cái user thì phải .dataValues tui thấy mới ra đúng nè
+  // 
   const isSuccess = comparePassword(matKhau, user.matKhau);
   if(!isSuccess){
     return res.status(400).send(`matKhau is not match`)
@@ -51,8 +54,8 @@ quanLiNguoiDung.post("/DangKi", async (req, res) => {
 
   const data = await createUser({
     taiKhoan,
-    //matKhau: matKhauHashed,//! password ko thể dịch ngược lại đc
-    matKhau,
+    matKhau: matKhauHashed,//! password ko thể dịch ngược lại đc
+    // matKhau, // =]] // TODO: 1. xem lại chỗ lỗi ngốc nghếch này nha
     email,
     soDt,
     hoTen,

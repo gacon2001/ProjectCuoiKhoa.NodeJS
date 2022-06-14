@@ -1,0 +1,23 @@
+
+
+
+
+1 cái gọi là cụm rạp chứa:
+"maCumRap": "bhd-star-cineplex-3-2",
+"tenCumRap": "BHD Star Cineplex - 3/2",
+"diaChi": "L5-Vincom 3/2, 3C Đường 3/2, Q.10"
+
+1 cái gọi là danh sách rạp chứa:
+"maRap": 451,
+"tenRap": "Rạp 1"
+
+và cụm rạp sẽ có hasMany rạp
+1 rạp sẽ belongTo 1 cụm rạp
+
+
+User.findAll({
+  include: {
+    model: Task,
+    required: true
+  }
+});

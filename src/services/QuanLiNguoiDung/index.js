@@ -29,6 +29,7 @@ const createUser = async (user) => {
     const newUser = await LayDanhSachNguoiDung.create(user);
     return newUser;
   } catch (error) {
+    console.log(error);
     return null;
   }
 };
@@ -57,7 +58,6 @@ const getUserByTaiKhoan = async (taiKhoan) => {
         },
       ],
     });
-    // console.log({user});
     return user;
   } catch (error) {
     return null;

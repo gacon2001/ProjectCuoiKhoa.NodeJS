@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
       hoTen: DataTypes.STRING,
       email: DataTypes.STRING,
       soDt: DataTypes.INTEGER,
-      matKhau: DataTypes.INTEGER,
+      matKhau: DataTypes.STRING, 
       maLoaiNguoiDung: DataTypes.STRING,
     },
     {
@@ -44,5 +44,7 @@ module.exports = (sequelize, DataTypes) => {
       // deletedAt: "destroyTime",
     }
   );
+  //!sửa j thì chạy lại lệnh rồi comment lại
+  // LayDanhSachNguoiDung.sync({alter: true}); // recreate table 
   return LayDanhSachNguoiDung;
 };
